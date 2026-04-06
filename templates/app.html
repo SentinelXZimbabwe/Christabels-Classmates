@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Christabel Classmates App</title>
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top, #0f0f0f, #070707);
+            color: white;
+        }
+
+        /* HEADER */
+        .header {
+            position: sticky;
+            top: 0;
+            background: #181818;
+            padding: 16px 20px;
+            border-bottom: 1px solid #2a2a2a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .brand {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .header a {
+            color: #00e676;
+            text-decoration: none;
+            margin-left: 10px;
+        }
+
+        /* CONTAINER */
+        .container {
+            padding: 20px;
+            max-width: 900px;
+            margin: auto;
+        }
+
+        /* MEDIA CARD */
+        .media-card {
+            background: #1b1b1b;
+            border: 1px solid #2a2a2a;
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 18px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.4);
+        }
+
+        .media-title {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .meta {
+            font-size: 13px;
+            color: #aaa;
+            margin-bottom: 10px;
+        }
+
+        a.play {
+            display: inline-block;
+            margin: 10px 0;
+            color: #00e676;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        /* BUTTONS */
+        button {
+            padding: 8px 12px;
+            margin-top: 8px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .like-btn {
+            background: #e91e63;
+            color: white;
+        }
+
+        .like-btn:hover {
+            opacity: 0.85;
+        }
+
+        /* INPUT */
+        .comment-box {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            border-radius: 8px;
+            border: 1px solid #2a2a2a;
+            background: #0f0f0f;
+            color: white;
+        }
+
+        /* COMMENTS */
+        .comment {
+            font-size: 13px;
+            color: #ccc;
+            margin-top: 6px;
+            padding-left: 8px;
+            border-left: 2px solid #333;
+        }
+
+        .section-title {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #bbb;
+        }
+
+        .lock-msg {
+            font-size: 13px;
+            color: #888;
+            margin-top: 8px;
+        }
+
+        .icon {
+            margin-right: 6px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <div class="brand">
+        <i class="fa-solid fa-music icon"></i> Christabel Platform
+    </div>
+
+    <div>
+        {% if logged_in %}
+            Welcome {{ session.username }}
+            <a href="/logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        {% else %}
+            <a href="/login"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+            <a href="/create-account"><i class="fa-solid fa-user-plus"></i> Sign Up</a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="container">
+
+{% for item in media %}
+
+<div class="media-card">
+
+    <div class="media-title">{{ item[1] }}</div>
+    <div class="meta">Type: {{ item[2] }}</div>
+
+    <a class="play" href="/media/{{ item[0] }}" target="_blank">
+        <i class="fa-solid fa-play"></i> Play Media
+    </a>
+
+    <div class="meta">
+        ❤️ Likes: {{ likes.get(item[0], 0) }}
+    </div>
+
+    {% if logged_in %}
+
+        <a href="/like/{{ item[0] }}">
+            <button class="like-btn">
+                <i class="fa-solid fa-heart"></i> Like
+            </button>
+        </a>
+
+        <form method="POST" action="/comment/{{ item[0] }}">
+            <input class="comment-box" name="comment" placeholder="Write a comment..." required>
+            <button type="submit">
+                <i class="fa-solid fa-paper-plane"></i> Comment
+            </button>
+        </form>
+
+    {% else %}
+        <div class="lock-msg">
+            🔒 Login required to like and comment
+        </div>
+    {% endif %}
+
+    <div class="section-title">Comments</div>
+
+    {% for c in comments.get(item[0], []) %}
+        <div class="comment">
+            <i class="fa-solid fa-user"></i>
+            {{ c.user }}: {{ c.comment }} ({{ c.time }})
+        </div>
+    {% endfor %}
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</body>
+</html>

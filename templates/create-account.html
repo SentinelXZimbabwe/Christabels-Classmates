@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Account</title>
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top, #0f0f0f, #070707);
+            color: white;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .box {
+            width: 380px;
+            background: #1b1b1b;
+            border: 1px solid #2a2a2a;
+            border-radius: 14px;
+            padding: 25px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .subtext {
+            font-size: 13px;
+            color: #aaa;
+            margin-bottom: 15px;
+        }
+
+        input {
+            width: 100%;
+            padding: 11px;
+            margin: 8px 0;
+            border-radius: 10px;
+            border: 1px solid #2a2a2a;
+            background: #0f0f0f;
+            color: white;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #00e676;
+            box-shadow: 0 0 5px rgba(0, 230, 118, 0.3);
+        }
+
+        button {
+            width: 100%;
+            padding: 11px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #00c853, #00e676);
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .footer {
+            margin-top: 12px;
+            font-size: 13px;
+            color: #aaa;
+            text-align: center;
+        }
+
+        a {
+            color: #00e676;
+            text-decoration: none;
+        }
+
+        .icon {
+            color: #00e676;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #777;
+            margin-top: -4px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+
+    <h2>
+        <i class="fa-solid fa-user-plus icon"></i>
+        Create Account
+    </h2>
+
+    <div class="subtext">
+        Join Christabel’s Platform to like, comment, and connect.
+    </div>
+
+    <form method="POST">
+
+        <input type="text" name="full_name" placeholder="Full Name" required>
+        <div class="hint">Your real or stage name</div>
+
+        <input type="text" name="username" placeholder="Username" required>
+        <div class="hint">Unique platform handle</div>
+
+        <input type="email" name="email" placeholder="Email" required>
+        <div class="hint">Used for account recovery (optional backend use)</div>
+
+        <input type="password" name="password" placeholder="Password" required>
+        <div class="hint">Choose a strong password</div>
+
+        <button type="submit">
+            <i class="fa-solid fa-check"></i> Create Account
+        </button>
+
+    </form>
+
+    <div class="footer">
+        Already have an account? <a href="/login">Login</a>
+    </div>
+
+</div>
+
+</body>
+</html>

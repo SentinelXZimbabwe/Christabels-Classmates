@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Christabel Classmates Platform</title>
+
+<!-- ICONS -->
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    background: radial-gradient(circle at top, #121212, #050505);
+    color: #ffffff;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* MAIN CARD */
+.container {
+    width: 90%;
+    max-width: 800px;
+    padding: 40px;
+    text-align: center;
+
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+
+    backdrop-filter: blur(14px);
+    box-shadow: 0 0 40px rgba(0, 255, 170, 0.08);
+}
+
+/* TITLE */
+h1 {
+    font-size: 38px;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+.tagline {
+    color: #aaa;
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+/* BUTTON GRID */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+}
+
+/* BUTTON STYLE */
+a.button {
+    text-decoration: none;
+    color: white;
+
+    padding: 15px;
+    border-radius: 14px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    transition: 0.25s ease;
+}
+
+a.button i {
+    font-size: 20px;
+    margin-bottom: 8px;
+    color: #00ffcc;
+}
+
+a.button:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 20px rgba(0, 255, 204, 0.2);
+    border-color: rgba(0, 255, 204, 0.4);
+}
+
+/* SPECIAL COLORS */
+.login i { color: #4fc3f7; }
+.signup i { color: #81c784; }
+.app i { color: #ffb74d; }
+.admin i { color: #f06292; }
+
+/* FOOTER */
+footer {
+    margin-top: 30px;
+    font-size: 11px;
+    color: #666;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>⛪ Christabel Classmates</h1>
+    <div class="tagline">
+        A digital sanctuary for worship, music, and connection
+    </div>
+
+    <div class="grid">
+
+        <a href="/login" class="button login">
+            <i class="fa-solid fa-right-to-bracket"></i>
+            Login
+        </a>
+
+        <a href="/create-account" class="button signup">
+            <i class="fa-solid fa-user-plus"></i>
+            Create Account
+        </a>
+
+        <a href="/app" class="button app">
+            <i class="fa-solid fa-play"></i>
+            Enter App
+        </a>
+
+        <a href="/admin" class="button admin">
+            <i class="fa-solid fa-lock"></i>
+            Admin Panel
+        </a>
+
+    </div>
+
+    <footer>
+        Built for Christabel Lalaz • Gospel Media Platform v1.0
+    </footer>
+
+</div>
+
+</body>
+</html>

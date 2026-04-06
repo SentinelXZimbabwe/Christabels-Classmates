@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top, #0f0f0f, #070707);
+            color: white;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .box {
+            width: 340px;
+            background: #1b1b1b;
+            border: 1px solid #2a2a2a;
+            border-radius: 14px;
+            padding: 25px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        }
+
+        h2 {
+            margin: 0 0 10px 0;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .subtext {
+            font-size: 13px;
+            color: #aaa;
+            margin-bottom: 15px;
+        }
+
+        input {
+            width: 100%;
+            padding: 11px;
+            margin: 8px 0;
+            border-radius: 10px;
+            border: 1px solid #2a2a2a;
+            background: #0f0f0f;
+            color: white;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #2196f3;
+            box-shadow: 0 0 6px rgba(33, 150, 243, 0.3);
+        }
+
+        button {
+            width: 100%;
+            padding: 11px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #2196f3, #03a9f4);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .footer {
+            margin-top: 12px;
+            font-size: 13px;
+            color: #aaa;
+            text-align: center;
+        }
+
+        a {
+            color: #03a9f4;
+            text-decoration: none;
+        }
+
+        .icon {
+            color: #03a9f4;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #777;
+            margin-top: -4px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+
+    <h2>
+        <i class="fa-solid fa-right-to-bracket icon"></i>
+        Login
+    </h2>
+
+    <div class="subtext">
+        Access Christabel’s Platform
+    </div>
+
+    <form method="POST">
+
+        <input type="text" name="username" placeholder="Username" required>
+        <div class="hint">Your platform username</div>
+
+        <input type="password" name="password" placeholder="Password" required>
+        <div class="hint">Enter your secure password</div>
+
+        <button type="submit">
+            <i class="fa-solid fa-unlock"></i> Login
+        </button>
+
+    </form>
+
+    <div class="footer">
+        No account? <a href="/create-account">Create one</a>
+    </div>
+
+</div>
+
+</body>
+</html>
