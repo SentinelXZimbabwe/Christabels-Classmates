@@ -1,204 +1,363 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Christabel Classmates App</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<title>Christabel Classmates</title>
 
-    <style>
-        body {
-            margin: 0;
-            font-family: "Segoe UI", sans-serif;
-            background: radial-gradient(circle at top, #0f0f0f, #070707);
-            color: white;
-        }
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-        /* HEADER */
-        .header {
-            position: sticky;
-            top: 0;
-            background: #181818;
-            padding: 16px 20px;
-            border-bottom: 1px solid #2a2a2a;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 100;
-        }
+<style>
 
-        .brand {
-            font-size: 18px;
-            font-weight: bold;
-        }
+/* ================= VARIABLES ================= */
+:root {
+    --accent: #00e676;
+    --accent2: #00c3ff;
+    --bg: #0b0b0b;
+    --card: rgba(255,255,255,0.05);
+    --border: rgba(255,255,255,0.08);
+}
 
-        .header a {
-            color: #00e676;
-            text-decoration: none;
-            margin-left: 10px;
-        }
+/* ================= GLOBAL ================= */
+* {
+    box-sizing: border-box;
+}
 
-        /* CONTAINER */
-        .container {
-            padding: 20px;
-            max-width: 900px;
-            margin: auto;
-        }
+body {
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    background: radial-gradient(circle at top, #111, #050505);
+    color: white;
+}
 
-        /* MEDIA CARD */
-        .media-card {
-            background: #1b1b1b;
-            border: 1px solid #2a2a2a;
-            border-radius: 14px;
-            padding: 18px;
-            margin-bottom: 18px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.4);
-        }
+/* ================= HEADER ================= */
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(14px);
+    background: rgba(20,20,20,0.75);
+    border-bottom: 1px solid var(--border);
 
-        .media-title {
-            font-size: 18px;
-            margin-bottom: 5px;
-        }
+    padding: 12px 14px;
 
-        .meta {
-            font-size: 13px;
-            color: #aaa;
-            margin-bottom: 10px;
-        }
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
 
-        a.play {
-            display: inline-block;
-            margin: 10px 0;
-            color: #00e676;
-            text-decoration: none;
-            font-weight: bold;
-        }
+.brand {
+    font-weight: 600;
+    font-size: 15px;
+}
 
-        /* BUTTONS */
-        button {
-            padding: 8px 12px;
-            margin-top: 8px;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-        }
+.brand i {
+    color: var(--accent);
+}
 
-        .like-btn {
-            background: #e91e63;
-            color: white;
-        }
+/* ================= SEARCH ================= */
+.search {
+    display: flex;
+    gap: 6px;
+    flex: 1;
+    max-width: 420px;
+}
 
-        .like-btn:hover {
-            opacity: 0.85;
-        }
+.search input {
+    flex: 1;
+    padding: 9px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: #0f0f0f;
+    color: white;
+    outline: none;
+}
 
-        /* INPUT */
-        .comment-box {
-            width: 100%;
-            padding: 10px;
-            margin-top: 8px;
-            border-radius: 8px;
-            border: 1px solid #2a2a2a;
-            background: #0f0f0f;
-            color: white;
-        }
+.search button {
+    padding: 9px 12px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: black;
+    cursor: pointer;
+}
 
-        /* COMMENTS */
-        .comment {
-            font-size: 13px;
-            color: #ccc;
-            margin-top: 6px;
-            padding-left: 8px;
-            border-left: 2px solid #333;
-        }
+/* ================= USER ================= */
+.user {
+    font-size: 13px;
+}
 
-        .section-title {
-            margin-top: 15px;
-            font-size: 14px;
-            color: #bbb;
-        }
+.user a {
+    color: var(--accent2);
+    text-decoration: none;
+    margin-left: 8px;
+}
 
-        .lock-msg {
-            font-size: 13px;
-            color: #888;
-            margin-top: 8px;
-        }
+/* ================= CONTAINER ================= */
+.container {
+    max-width: 900px;
+    margin: auto;
+    padding: 16px;
+}
 
-        .icon {
-            margin-right: 6px;
-        }
-    </style>
+/* ================= NAV ================= */
+.nav {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.nav a {
+    text-decoration: none;
+    color: #bbb;
+    font-size: 13px;
+    padding: 7px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    transition: 0.2s;
+}
+
+.nav a:hover {
+    color: white;
+    border-color: var(--accent);
+}
+
+/* ================= CARD ================= */
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px;
+    margin-bottom: 16px;
+    backdrop-filter: blur(10px);
+    transition: 0.25s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(0,255,170,0.25);
+}
+
+.title {
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.meta {
+    font-size: 12px;
+    color: #aaa;
+    margin-bottom: 10px;
+}
+
+/* MEDIA */
+video, audio, img {
+    width: 100%;
+    border-radius: 12px;
+    margin-top: 8px;
+}
+
+/* ================= ACTIONS ================= */
+.actions {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.like {
+    background: linear-gradient(135deg, #ff4081, #ff80ab);
+    border: none;
+    padding: 6px 12px;
+    border-radius: 10px;
+    color: white;
+    cursor: pointer;
+}
+
+/* ================= COMMENTS ================= */
+.comments {
+    margin-top: 12px;
+}
+
+/* COMMENT COUNT */
+.comment-count {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 6px;
+}
+
+/* COMMENT ITEM */
+.comment {
+    font-size: 13px;
+    margin-top: 6px;
+    padding-left: 10px;
+    border-left: 2px solid #333;
+    line-height: 1.4;
+}
+
+/* USERNAME */
+.comment span {
+    color: var(--accent2);
+    font-weight: 500;
+}
+
+/* INPUT */
+.comment-box {
+    width: 100%;
+    padding: 10px;
+    margin-top: 8px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: #0f0f0f;
+    color: white;
+    outline: none;
+}
+
+/* NO RESULTS */
+.no-results {
+    text-align: center;
+    color: #888;
+    margin-top: 40px;
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 600px) {
+
+    .header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .user {
+        text-align: right;
+    }
+}
+
+</style>
 </head>
 
 <body>
 
-<!-- HEADER -->
+<!-- ================= HEADER ================= -->
 <div class="header">
+
     <div class="brand">
-        <i class="fa-solid fa-music icon"></i> Christabel Platform
+        <i class="fa-solid fa-music"></i> Christabel Classmates
     </div>
 
-    <div>
+    <form class="search" method="GET" action="/app">
+        <input type="text" name="search"
+               placeholder="Search music..."
+               value="{{ search if search else '' }}">
+        <button><i class="fa fa-search"></i></button>
+    </form>
+
+    <div class="user">
         {% if logged_in %}
-            Welcome {{ session.username }}
-            <a href="/logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+            {{ session.username }}
+            <a href="/logout">Logout</a>
         {% else %}
-            <a href="/login"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
-            <a href="/create-account"><i class="fa-solid fa-user-plus"></i> Sign Up</a>
+            <a href="/login">Login</a>
         {% endif %}
     </div>
+
 </div>
 
-<!-- MAIN CONTENT -->
+<!-- ================= NAV ================= -->
+<div class="container">
+    <div class="nav">
+        <a href="/app">All</a>
+        <a href="/app?type=video">🎬 Videos</a>
+        <a href="/app?type=audio">🎵 Audio</a>
+        <a href="/app?type=image">🖼️ Images</a>
+    </div>
+</div>
+
+<!-- ================= FEED ================= -->
 <div class="container">
 
-{% for item in media %}
-
-<div class="media-card">
-
-    <div class="media-title">{{ item[1] }}</div>
-    <div class="meta">Type: {{ item[2] }}</div>
-
-    <a class="play" href="/media/{{ item[0] }}" target="_blank">
-        <i class="fa-solid fa-play"></i> Play Media
-    </a>
-
-    <div class="meta">
-        ❤️ Likes: {{ likes.get(item[0], 0) }}
+{% if no_results %}
+    <div class="no-results">
+        No results found.
     </div>
+{% endif %}
 
-    {% if logged_in %}
+{% for item in media %}
+<div class="card">
 
-        <a href="/like/{{ item[0] }}">
-            <button class="like-btn">
-                <i class="fa-solid fa-heart"></i> Like
-            </button>
-        </a>
+    <div class="title">{{ item.title }}</div>
+    <div class="meta">{{ item.type }}</div>
 
-        <form method="POST" action="/comment/{{ item[0] }}">
-            <input class="comment-box" name="comment" placeholder="Write a comment..." required>
-            <button type="submit">
-                <i class="fa-solid fa-paper-plane"></i> Comment
-            </button>
-        </form>
+    <!-- MEDIA -->
+    {% if item.type == "video" %}
+        <video controls>
+            <source src="/media/{{ item.id }}">
+        </video>
 
-    {% else %}
-        <div class="lock-msg">
-            🔒 Login required to like and comment
-        </div>
+    {% elif item.type == "audio" %}
+        <audio controls>
+            <source src="/media/{{ item.id }}">
+        </audio>
+
+    {% elif item.type == "image" %}
+        <img src="/media/{{ item.id }}">
     {% endif %}
 
-    <div class="section-title">Comments</div>
+    <!-- ACTIONS -->
+    <div class="actions">
+        <div>❤️ {{ likes.get(item.id, 0) }}</div>
 
-    {% for c in comments.get(item[0], []) %}
-        <div class="comment">
-            <i class="fa-solid fa-user"></i>
-            {{ c.user }}: {{ c.comment }} ({{ c.time }})
+        <a href="/like/{{ item.id }}">
+            <button class="like">
+                <i class="fa-solid fa-heart"></i>
+            </button>
+        </a>
+    </div>
+
+    <!-- COMMENTS -->
+    <div class="comments">
+
+        <!-- COMMENT COUNT -->
+        <div class="comment-count">
+            💬 {{ (comments.get(item.id, []) | length) }} comments
         </div>
-    {% endfor %}
+
+        {% set post_comments = comments.get(item.id, []) %}
+
+        {% if post_comments %}
+
+            {% for c in post_comments %}
+                <div class="comment">
+                    <span>{{ c.user }}</span>: {{ c.comment }}
+                </div>
+            {% endfor %}
+
+        {% else %}
+            <div class="comment" style="color:#777;">
+                No comments yet
+            </div>
+        {% endif %}
+
+        {% if logged_in %}
+        <form method="POST" action="/comment/{{ item.id }}">
+            <input class="comment-box"
+                   name="comment"
+                   placeholder="Write a comment..."
+                   required>
+        </form>
+        {% endif %}
+
+    </div>
 
 </div>
-
 {% endfor %}
 
 </div>

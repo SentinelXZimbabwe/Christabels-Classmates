@@ -9,20 +9,19 @@ app = Flask(__name__)
 app.secret_key = "super_secret_key_change_me"
 
 # -------------------------
-# DATABASE PATH
+# DATABASE
 # -------------------------
 DB_FOLDER = "database"
 DB_PATH = os.path.join(DB_FOLDER, "app.db")
 os.makedirs(DB_FOLDER, exist_ok=True)
 
 # -------------------------
-# INIT DATABASE
+# INIT DB
 # -------------------------
 def init_db():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    # MEDIA TABLE
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS media (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -33,7 +32,6 @@ def init_db():
         )
     """)
 
-    # USERS TABLE
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id TEXT PRIMARY KEY,
@@ -45,7 +43,6 @@ def init_db():
         )
     """)
 
-    # LIKES TABLE
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS likes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -55,7 +52,6 @@ def init_db():
         )
     """)
 
-    # COMMENTS TABLE
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS comments (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -78,30 +74,97 @@ ADMIN_USERNAME = "Christabel Lalaz"
 ADMIN_PASSWORD = "christabel12234@"
 
 # ======================================================
-# LANDING PAGE (ENTRY POINT)
+# MEDIA TYPE DETECTION
+# ======================================================
+def get_media_category(filename):
+    ext = filename.lower().split(".")[-1]
+
+    if ext in ["mp4", "mov", "avi", "mkv", "webm"]:
+        return "video"
+    elif ext in ["mp3", "wav", "aac", "ogg"]:
+        return "audio"
+    elif ext in ["jpg", "jpeg", "png", "webp"]:
+        return "image"
+    return "unknown"
+
+# ======================================================
+# USERNAME RESOLVER
+# ======================================================
+def get_username(user_id):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT username FROM users WHERE id=?", (user_id,))
+    row = cursor.fetchone()
+
+    conn.close()
+    return row[0] if row else "Unknown User"
+
+# ======================================================
+# LANDING PAGE
 # ======================================================
 @app.route("/")
 def landing():
     return render_template("landing.html")
 
-
 # ======================================================
-# USER APP FEED
+# MAIN FEED
 # ======================================================
 @app.route("/app")
 def app_feed():
     if not session.get("user_id"):
         return redirect("/login")
 
+    search = request.args.get("search", "").strip().lower()
+    media_type = request.args.get("type")
+
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    cursor.execute("SELECT id, title, media_type, filename FROM media")
-    media = cursor.fetchall()
+    # ---------------- MEDIA QUERY ----------------
+    query = "SELECT id, title, media_type, filename FROM media"
+    params = []
 
-    cursor.execute("SELECT media_id, COUNT(*) FROM likes GROUP BY media_id")
+    if media_type in ["video", "audio", "image"]:
+        query += " WHERE media_type=?"
+        params.append(media_type)
+
+    cursor.execute(query, params)
+    rows = cursor.fetchall()
+
+    media = []
+
+    for r in rows:
+        media_id = r[0]
+        title = r[1].lower()
+
+        if search and search not in title:
+            continue
+
+        media.append({
+            "id": media_id,
+            "title": r[1],
+            "type": r[2],
+            "filename": r[3]
+        })
+
+    # ---------------- LIKES ----------------
+    cursor.execute("""
+        SELECT media_id, COUNT(*)
+        FROM likes
+        GROUP BY media_id
+    """)
     likes = dict(cursor.fetchall())
 
+    # ---------------- COMMENT COUNTS (NEW) ----------------
+    cursor.execute("""
+        SELECT media_id, COUNT(*)
+        FROM comments
+        GROUP BY media_id
+    """)
+    comment_counts = dict(cursor.fetchall())
+
+    # ---------------- COMMENTS ----------------
     cursor.execute("""
         SELECT media_id, comment, created_at, user_id
         FROM comments
@@ -116,7 +179,7 @@ def app_feed():
         comments.setdefault(m_id, []).append({
             "comment": comment,
             "time": created_at,
-            "user": user_id
+            "user": get_username(user_id)
         })
 
     return render_template(
@@ -124,12 +187,15 @@ def app_feed():
         media=media,
         likes=likes,
         comments=comments,
-        logged_in=True
+        comment_counts=comment_counts,
+        logged_in=True,
+        search=search,
+        active_type=media_type,
+        no_results=len(media) == 0
     )
 
-
 # ======================================================
-# MEDIA STREAMING
+# MEDIA STREAM
 # ======================================================
 @app.route("/media/<int:media_id>")
 def media(media_id):
@@ -141,17 +207,12 @@ def media(media_id):
     conn.close()
 
     if row:
-        return send_file(
-            BytesIO(row[1]),
-            download_name=row[0],
-            as_attachment=False
-        )
+        return send_file(BytesIO(row[1]), download_name=row[0], as_attachment=False)
 
     return "Not found", 404
 
-
 # ======================================================
-# LIKE SYSTEM
+# LIKE
 # ======================================================
 @app.route("/like/<int:media_id>")
 def like(media_id):
@@ -162,20 +223,19 @@ def like(media_id):
     cursor = conn.cursor()
 
     try:
-        cursor.execute("""
-            INSERT INTO likes (user_id, media_id)
-            VALUES (?, ?)
-        """, (session["user_id"], media_id))
+        cursor.execute(
+            "INSERT INTO likes (user_id, media_id) VALUES (?, ?)",
+            (session["user_id"], media_id)
+        )
         conn.commit()
-    except sqlite3.IntegrityError:
+    except:
         pass
 
     conn.close()
     return redirect("/app")
 
-
 # ======================================================
-# COMMENT SYSTEM
+# COMMENT
 # ======================================================
 @app.route("/comment/<int:media_id>", methods=["POST"])
 def comment(media_id):
@@ -200,7 +260,6 @@ def comment(media_id):
 
     return redirect("/app")
 
-
 # ======================================================
 # CREATE ACCOUNT
 # ======================================================
@@ -224,7 +283,7 @@ def create_account():
             ))
 
             conn.commit()
-        except sqlite3.IntegrityError:
+        except:
             return "User already exists", 400
         finally:
             conn.close()
@@ -232,7 +291,6 @@ def create_account():
         return redirect("/login")
 
     return render_template("create-account.html")
-
 
 # ======================================================
 # LOGIN
@@ -244,7 +302,8 @@ def login():
         cursor = conn.cursor()
 
         cursor.execute("""
-            SELECT id, username FROM users
+            SELECT id, username
+            FROM users
             WHERE username=? AND password=?
         """, (request.form["username"], request.form["password"]))
 
@@ -260,7 +319,6 @@ def login():
 
     return render_template("login.html")
 
-
 # ======================================================
 # LOGOUT
 # ======================================================
@@ -269,14 +327,16 @@ def logout():
     session.clear()
     return redirect("/")
 
-
 # ======================================================
-# ADMIN PANEL
+# ADMIN
 # ======================================================
 @app.route("/admin", methods=["GET", "POST"])
 def admin():
     if request.method == "POST":
-        if request.form["username"] == ADMIN_USERNAME and request.form["password"] == ADMIN_PASSWORD:
+        if (
+            request.form["username"] == ADMIN_USERNAME and
+            request.form["password"] == ADMIN_PASSWORD
+        ):
             session["admin"] = True
             return redirect("/admin")
 
@@ -293,9 +353,8 @@ def admin():
 
     return render_template("admin.html", media=media)
 
-
 # ======================================================
-# MEDIA UPLOAD (ADMIN ONLY)
+# UPLOAD
 # ======================================================
 @app.route("/upload", methods=["POST"])
 def upload():
@@ -306,7 +365,7 @@ def upload():
     filename = file.filename
     blob = file.read()
 
-    media_type = "video" if filename.split(".")[-1] in ["mp4", "mov", "avi"] else "audio"
+    media_type = get_media_category(filename)
 
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -326,9 +385,8 @@ def upload():
 
     return redirect("/admin")
 
-
 # ======================================================
-# RUN APP
+# RUN
 # ======================================================
 if __name__ == "__main__":
     app.run(debug=True)
