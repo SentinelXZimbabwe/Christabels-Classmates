@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Request Submitted</title>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+
+/* ================= GLOBAL ================= */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    background: radial-gradient(circle at top, #121212, #050505);
+    color: #fff;
+
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 16px;
+}
+
+/* ================= CONTAINER ================= */
+.container {
+    width: 100%;
+    max-width: 520px;
+    padding: 34px 24px;
+    text-align: center;
+
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 22px;
+    backdrop-filter: blur(14px);
+
+    box-shadow: 0 0 25px rgba(0,0,0,0.4);
+}
+
+/* ================= ICON ================= */
+.icon {
+    font-size: 44px;
+    color: #00ffcc;
+    margin-bottom: 10px;
+}
+
+/* ================= TITLE ================= */
+h2 {
+    margin: 0 0 12px 0;
+    font-size: 26px;
+    letter-spacing: 0.5px;
+}
+
+/* ================= TEXT ================= */
+p {
+    font-size: 14px;
+    color: #aaa;
+    line-height: 1.5;
+    margin-bottom: 14px;
+}
+
+/* ================= LINK BUTTON ================= */
+a {
+    display: inline-block;
+    margin-top: 14px;
+    padding: 12px 18px;
+
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.1);
+
+    background: rgba(0,255,204,0.12);
+    color: white;
+
+    text-decoration: none;
+    font-size: 14px;
+
+    transition: 0.2s ease;
+}
+
+a:hover {
+    transform: translateY(-3px);
+    border-color: #00ffcc;
+    background: rgba(0,255,204,0.18);
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 600px) {
+    .container {
+        padding: 26px 16px;
+        border-radius: 18px;
+    }
+
+    h2 {
+        font-size: 22px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="icon">
+        <i class="fa-solid fa-circle-check"></i>
+    </div>
+
+    <h2>Request Submitted</h2>
+
+    <p>
+        Your API access request has been successfully received.
+        Our system has logged your submission for review.
+    </p>
+
+    <p>
+        Our team will evaluate your request and contact you via email once a decision has been made.
+    </p>
+
+    <a href="/app">
+        Return to Platform
+    </a>
+
+</div>
+
+</body>
+</html>

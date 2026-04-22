@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Request API Access</title>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+
+/* ================= GLOBAL ================= */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    background: radial-gradient(circle at top, #121212, #050505);
+    color: #fff;
+
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 16px;
+}
+
+/* ================= MAIN CONTAINER ================= */
+.container {
+    width: 100%;
+    max-width: 900px;
+    padding: 34px 24px;
+    text-align: center;
+
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 22px;
+    backdrop-filter: blur(14px);
+
+    box-shadow: 0 0 25px rgba(0,0,0,0.4);
+}
+
+/* ================= TITLE ================= */
+h2 {
+    font-size: 30px;
+    margin: 0 0 10px 0;
+    letter-spacing: 0.5px;
+}
+
+/* ================= TEXT ================= */
+p {
+    color: #aaa;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 25px;
+}
+
+/* ================= FORM ================= */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: center;
+}
+
+/* ================= INPUTS ================= */
+input, textarea {
+    width: 100%;
+    max-width: 600px;
+    padding: 14px;
+
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.12);
+
+    background: rgba(0,0,0,0.35);
+    color: white;
+
+    outline: none;
+    font-size: 14px;
+}
+
+input:focus, textarea:focus {
+    border-color: #00ffcc;
+    box-shadow: 0 0 10px rgba(0,255,204,0.15);
+}
+
+/* ================= SECTION HEADERS ================= */
+h3 {
+    margin: 15px 0 5px 0;
+    font-size: 16px;
+    color: #ddd;
+}
+
+/* ================= TIER OPTIONS ================= */
+label {
+    display: block;
+    width: 100%;
+    max-width: 600px;
+
+    text-align: left;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+
+    cursor: pointer;
+    transition: 0.2s ease;
+    color: #ccc;
+}
+
+label:hover {
+    border-color: #00ffcc;
+    background: rgba(0,255,204,0.05);
+}
+
+input[type="radio"] {
+    margin-right: 10px;
+    accent-color: #00ffcc;
+}
+
+/* ================= BUTTON ================= */
+button {
+    margin-top: 10px;
+    padding: 14px 18px;
+
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.1);
+
+    background: rgba(0,255,204,0.12);
+    color: white;
+
+    font-size: 14px;
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+button:hover {
+    transform: translateY(-3px);
+    border-color: #00ffcc;
+    background: rgba(0,255,204,0.18);
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 600px) {
+
+    .container {
+        padding: 26px 16px;
+        border-radius: 18px;
+    }
+
+    h2 {
+        font-size: 24px;
+    }
+
+    input, textarea, label {
+        max-width: 100%;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>🔑 API Access Request</h2>
+
+    <p>
+        Our platform provides API access for media streaming, integrations, and radio distribution.
+        Submit your request and our team will review it.
+    </p>
+
+    <form method="POST">
+
+        <h3>Your Details</h3>
+
+        <input type="text" name="name" placeholder="Full Name" required>
+        <input type="email" name="email" placeholder="Email Address" required>
+
+        <h3>Select Tier</h3>
+
+        <label>
+            <input type="radio" name="tier" value="Individual Developer" required>
+            Individual Developer (Basic API Access)
+        </label>
+
+        <label>
+            <input type="radio" name="tier" value="Radio Station">
+            Radio Station (Streaming + Distribution)
+        </label>
+
+        <label>
+            <input type="radio" name="tier" value="Enterprise">
+            Enterprise (Full Integration Access)
+        </label>
+
+        <h3>Describe Your Use Case</h3>
+
+        <textarea name="use_case" rows="6"
+            placeholder="Explain how you plan to use the API..."
+            required></textarea>
+
+        <button type="submit">
+            Submit Request
+        </button>
+
+    </form>
+
+</div>
+
+</body>
+</html>

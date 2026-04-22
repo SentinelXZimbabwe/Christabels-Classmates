@@ -4,6 +4,7 @@ import os
 from datetime import datetime
 import uuid
 from io import BytesIO
+import functions
 
 app = Flask(__name__)
 app.secret_key = "super_secret_key_change_me"
@@ -68,6 +69,11 @@ def init_db():
 init_db()
 
 # -------------------------
+# INIT EXTRA TABLES
+# -------------------------
+functions.init_reset_table()
+
+# -------------------------
 # ADMIN CREDENTIALS
 # -------------------------
 ADMIN_USERNAME = "Christabel Lalaz"
@@ -121,7 +127,6 @@ def app_feed():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    # ---------------- MEDIA QUERY ----------------
     query = "SELECT id, title, media_type, filename FROM media"
     params = []
 
@@ -133,42 +138,26 @@ def app_feed():
     rows = cursor.fetchall()
 
     media = []
-
     for r in rows:
-        media_id = r[0]
-        title = r[1].lower()
-
-        if search and search not in title:
+        if search and search not in r[1].lower():
             continue
 
         media.append({
-            "id": media_id,
+            "id": r[0],
             "title": r[1],
             "type": r[2],
             "filename": r[3]
         })
 
-    # ---------------- LIKES ----------------
-    cursor.execute("""
-        SELECT media_id, COUNT(*)
-        FROM likes
-        GROUP BY media_id
-    """)
+    cursor.execute("SELECT media_id, COUNT(*) FROM likes GROUP BY media_id")
     likes = dict(cursor.fetchall())
 
-    # ---------------- COMMENT COUNTS (NEW) ----------------
-    cursor.execute("""
-        SELECT media_id, COUNT(*)
-        FROM comments
-        GROUP BY media_id
-    """)
+    cursor.execute("SELECT media_id, COUNT(*) FROM comments GROUP BY media_id")
     comment_counts = dict(cursor.fetchall())
 
-    # ---------------- COMMENTS ----------------
     cursor.execute("""
         SELECT media_id, comment, created_at, user_id
-        FROM comments
-        ORDER BY created_at DESC
+        FROM comments ORDER BY created_at DESC
     """)
     raw_comments = cursor.fetchall()
 
@@ -212,7 +201,7 @@ def media(media_id):
     return "Not found", 404
 
 # ======================================================
-# LIKE
+# LIKE SYSTEM
 # ======================================================
 @app.route("/like/<int:media_id>")
 def like(media_id):
@@ -235,7 +224,7 @@ def like(media_id):
     return redirect("/app")
 
 # ======================================================
-# COMMENT
+# COMMENT SYSTEM
 # ======================================================
 @app.route("/comment/<int:media_id>", methods=["POST"])
 def comment(media_id):
@@ -281,7 +270,6 @@ def create_account():
                 request.form["password"],
                 datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             ))
-
             conn.commit()
         except:
             return "User already exists", 400
@@ -302,8 +290,7 @@ def login():
         cursor = conn.cursor()
 
         cursor.execute("""
-            SELECT id, username
-            FROM users
+            SELECT id, username FROM users
             WHERE username=? AND password=?
         """, (request.form["username"], request.form["password"]))
 
@@ -328,7 +315,72 @@ def logout():
     return redirect("/")
 
 # ======================================================
-# ADMIN
+# FORGOT PASSWORD
+# ======================================================
+@app.route("/forgot-password", methods=["GET", "POST"])
+def forgot_password():
+    if request.method == "POST":
+        email = request.form["email"]
+
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT id FROM users WHERE email=?", (email,))
+        user = cursor.fetchone()
+        conn.close()
+
+        if not user:
+            return "Email not found", 404
+
+        token = functions.create_reset_token(user[0])
+
+        base_url = request.host_url.rstrip("/")  # 🔥 FIXED
+        functions.send_reset_email(email, token, base_url)
+
+        return "Reset link sent to email"
+
+    return render_template("forgot-password.html")
+
+# ======================================================
+# RESET PASSWORD
+# ======================================================
+@app.route("/reset-password/<token>", methods=["GET", "POST"])
+def reset_password(token):
+    user_id = functions.verify_token(token)
+
+    if not user_id:
+        return "Invalid or expired token", 400
+
+    if request.method == "POST":
+        new_password = request.form["password"]
+        functions.update_password(user_id, new_password)
+        return redirect("/login")
+
+    return render_template("reset-password.html", token=token)
+
+# ======================================================
+# API REQUEST PAGE
+# ======================================================
+@app.route("/request-api", methods=["GET", "POST"])
+def request_api():
+    if request.method == "POST":
+        name = request.form["name"]
+        email = request.form["email"]
+        tier = request.form["tier"]
+        use_case = request.form["use_case"]
+
+        base_url = request.host_url.rstrip("/")
+
+        functions.send_api_request_email(
+            name, email, tier, use_case, base_url
+        )
+
+        return render_template("api-request-success.html")
+
+    return render_template("request-api.html")
+
+# ======================================================
+# ADMIN PANEL
 # ======================================================
 @app.route("/admin", methods=["GET", "POST"])
 def admin():
