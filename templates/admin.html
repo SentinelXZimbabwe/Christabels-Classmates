@@ -2,136 +2,243 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Christabel Admin Console</title>
 
-<!-- ICONS -->
 <link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
 
+/* ================= BASE ================= */
 body {
     margin: 0;
     font-family: "Segoe UI", sans-serif;
-    background: radial-gradient(circle at top, #0f0f0f, #050505);
+    background: #050505;
     color: white;
+}
+
+/* ================= LAYOUT ================= */
+.wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ================= SIDEBAR ================= */
+.sidebar {
+    width: 240px;
+    background: #0f0f0f;
+    border-right: 1px solid rgba(255,255,255,0.08);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.logo {
+    width: 60px;
+    margin: 0 auto 10px;
+}
+
+.sidebar h3 {
+    text-align: center;
+    font-size: 13px;
+    color: #aaa;
+    margin-bottom: 15px;
+}
+
+.nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.nav a {
+    padding: 12px;
+    border-radius: 10px;
+    color: #ccc;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: 0.2s;
+    font-size: 14px;
+}
+
+.nav a:hover,
+.nav a.active {
+    background: rgba(0,255,204,0.12);
+    color: #00ffcc;
+}
+
+/* ================= MAIN ================= */
+.main {
+    flex: 1;
+    padding: 20px;
 }
 
 /* HEADER */
 .header {
-    padding: 25px;
-    text-align: center;
-    background: rgba(255, 255, 255, 0.04);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
 .header h2 {
     margin: 0;
-    font-size: 24px;
+    font-size: 20px;
 }
 
-.header small {
-    color: #888;
+.logout {
+    color: #ff5252;
+    text-decoration: none;
+    font-size: 14px;
 }
 
-/* LAYOUT */
-.container {
-    max-width: 1000px;
-    margin: auto;
-    padding: 20px;
-}
-
-/* GLASS BOX */
+/* ================= BOX ================= */
 .box {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 16px;
-    padding: 20px;
-    margin-bottom: 20px;
-    backdrop-filter: blur(12px);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 16px;
 }
 
-/* INPUTS */
+/* ================= INPUTS ================= */
 input {
     width: 100%;
-    padding: 12px;
-    margin-top: 8px;
-    margin-bottom: 10px;
-
+    padding: 14px;
+    margin-bottom: 12px;
     border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.3);
+    border: none;
+    background: rgba(0,0,0,0.3);
     color: white;
+    font-size: 15px;
 }
 
-/* BUTTONS */
+/* ================= BUTTON ================= */
 button {
     width: 100%;
-    padding: 12px;
+    padding: 14px;
     border: none;
     border-radius: 10px;
-    cursor: pointer;
-
     background: linear-gradient(90deg, #00c853, #00e5ff);
-    color: black;
     font-weight: bold;
-    transition: 0.2s;
+    font-size: 15px;
+    cursor: pointer;
 }
 
-button:hover {
-    transform: scale(1.02);
+/* ================= TABLE ================= */
+.table-wrapper {
+    overflow-x: auto;
 }
 
-/* TABLE */
 table {
     width: 100%;
+    min-width: 500px;
     border-collapse: collapse;
 }
 
 th, td {
-    padding: 12px;
+    padding: 10px;
     border-bottom: 1px solid rgba(255,255,255,0.08);
-    text-align: left;
+    font-size: 13px;
 }
 
 th {
     color: #00e5ff;
-    font-weight: 600;
 }
 
-/* ACTION LINKS */
-a {
-    color: #ff5252;
-    text-decoration: none;
-    margin-right: 10px;
-}
-
-a:hover {
-    text-decoration: underline;
-}
-
-/* ICONS */
-.icon {
-    margin-right: 6px;
-}
-
-/* GRID FOR DASH */
-.grid {
+/* ================= KPI ================= */
+.kpi {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
 }
 
-/* MOBILE */
+.kpi-card {
+    background: rgba(0,255,204,0.08);
+    padding: 14px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.kpi-card h4 {
+    margin: 0;
+    font-size: 12px;
+    color: #aaa;
+}
+
+.kpi-card p {
+    margin: 6px 0 0;
+    font-size: 18px;
+}
+
+/* ================= SECTIONS ================= */
+.section {
+    display: none;
+}
+
+.section.active {
+    display: block;
+}
+
+/* ================= MOBILE ================= */
 @media (max-width: 768px) {
-    .grid {
-        grid-template-columns: 1fr;
+
+    .wrapper {
+        flex-direction: column;
     }
+
+    .sidebar {
+        width: 100%;
+        flex-direction: row;
+        align-items: center;
+        overflow-x: auto;
+        gap: 10px;
+    }
+
+    .sidebar h3 {
+        display: none;
+    }
+
+    .logo {
+        width: 40px;
+        margin: 0;
+    }
+
+    .nav {
+        flex-direction: row;
+    }
+
+    .nav a {
+        font-size: 13px;
+        padding: 10px 12px;
+        white-space: nowrap;
+    }
+
+    .main {
+        padding: 14px;
+    }
+
+    .header h2 {
+        font-size: 18px;
+    }
+
 }
 
-.logout {
-    float: right;
-    color: #ff5252;
+/* SMALL MOBILE */
+@media (max-width: 480px) {
+
+    .kpi-card p {
+        font-size: 16px;
+    }
+
+    th, td {
+        font-size: 12px;
+    }
+
 }
 
 </style>
@@ -141,95 +248,153 @@ a:hover {
 
 {% if session.get('admin') %}
 
-<div class="header">
-    <h2>🎛️ Christabel Gospel Admin Console</h2>
-    <small>Media control system</small>
-    <a class="logout" href="/logout">
-        <i class="fa-solid fa-right-from-bracket"></i> Logout
-    </a>
-</div>
+<div class="wrapper">
 
-<div class="container">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
 
-    <!-- UPLOAD -->
-    <div class="box">
-        <h3><i class="fa-solid fa-cloud-arrow-up icon"></i>Upload Media</h3>
+        <img src="{{ url_for('static', filename='logo.png') }}" class="logo">
 
-        <form action="/upload" method="POST" enctype="multipart/form-data">
+        <h3>Admin</h3>
 
-            <input type="text" name="title" placeholder="Title (Song / Video Name)" required>
+        <div class="nav">
+            <a href="#" class="active" onclick="showSection(event,'kpi')">
+                <i class="fa-solid fa-chart-line"></i> KPI
+            </a>
 
-            <input type="file" name="file" required>
+            <a href="#" onclick="showSection(event,'media')">
+                <i class="fa-solid fa-music"></i> Media
+            </a>
 
-            <button type="submit">
-                <i class="fa-solid fa-upload icon"></i>
-                Upload
-            </button>
-
-        </form>
-    </div>
-
-    <!-- MEDIA LIST -->
-    <div class="box">
-
-        <h3><i class="fa-solid fa-music icon"></i>Uploaded Media Library</h3>
-
-        <table>
-            <tr>
-                <th>Title</th>
-                <th>Type</th>
-                <th>Play</th>
-                <th>Actions</th>
-            </tr>
-
-            {% for item in media %}
-            <tr>
-                <td>{{ item[1] }}</td>
-                <td>{{ item[2] }}</td>
-                <td>
-                    <a href="/media/{{ item[0] }}" target="_blank">
-                        <i class="fa-solid fa-play"></i> Play
-                    </a>
-                </td>
-                <td>
-                    <a href="/delete/{{ item[0] }}">
-                        <i class="fa-solid fa-trash"></i> Delete
-                    </a>
-                </td>
-            </tr>
-            {% endfor %}
-
-        </table>
+            <a href="#" onclick="showSection(event,'users')">
+                <i class="fa-solid fa-users"></i> Users
+            </a>
+        </div>
 
     </div>
 
+    <!-- MAIN -->
+    <div class="main">
+
+        <div class="header">
+            <h2>Admin Console</h2>
+            <a href="/logout" class="logout">Logout</a>
+        </div>
+
+        <!-- KPI -->
+        <div id="kpi" class="section active">
+            <div class="box">
+                <div class="kpi">
+                    <div class="kpi-card">
+                        <h4>Users</h4>
+                        <p>{{ total_users }}</p>
+                    </div>
+                    <div class="kpi-card">
+                        <h4>Media</h4>
+                        <p>{{ total_media }}</p>
+                    </div>
+                    <div class="kpi-card">
+                        <h4>Likes</h4>
+                        <p>{{ total_likes }}</p>
+                    </div>
+                    <div class="kpi-card">
+                        <h4>Comments</h4>
+                        <p>{{ total_comments }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MEDIA -->
+        <div id="media" class="section">
+
+            <div class="box">
+                <form action="/upload" method="POST" enctype="multipart/form-data">
+                    <input type="text" name="title" placeholder="Media Title" required>
+                    <input type="file" name="file" required>
+                    <button type="submit">Upload</button>
+                </form>
+            </div>
+
+            <div class="box">
+                <div class="table-wrapper">
+                    <table>
+                        <tr>
+                            <th>Title</th>
+                            <th>Type</th>
+                            <th>Play</th>
+                        </tr>
+
+                        {% for item in media %}
+                        <tr>
+                            <td>{{ item[1] }}</td>
+                            <td>{{ item[2] }}</td>
+                            <td><a href="/media/{{ item[0] }}" target="_blank">Play</a></td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- USERS -->
+        <div id="users" class="section">
+
+            <div class="box">
+                <div class="table-wrapper">
+                    <table>
+                        <tr>
+                            <th>Name</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Joined</th>
+                        </tr>
+
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user[1] }}</td>
+                            <td>{{ user[2] }}</td>
+                            <td>{{ user[3] }}</td>
+                            <td>{{ user[4] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
+
+<script>
+function showSection(e, id) {
+    e.preventDefault();
+
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+
+    document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
+    e.currentTarget.classList.add('active');
+}
+</script>
 
 {% else %}
 
-<!-- LOGIN VIEW -->
-<div class="header">
-    <h2>🔐 Admin Login</h2>
-</div>
+<div style="padding:40px;text-align:center">
 
-<div class="container">
+    <h2>Admin Login</h2>
 
-    <div class="box">
+    <form method="POST" style="max-width:300px;margin:auto">
 
-        <form method="POST">
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="password" name="password" placeholder="Password" required>
 
-            <input type="text" name="username" placeholder="Username" required>
+        <button type="submit">Login</button>
 
-            <input type="password" name="password" placeholder="Password" required>
-
-            <button type="submit">
-                <i class="fa-solid fa-lock"></i>
-                Login
-            </button>
-
-        </form>
-
-    </div>
+    </form>
 
 </div>
 

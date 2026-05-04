@@ -6,7 +6,6 @@
 
 <title>Create Account</title>
 
-<!-- Icons -->
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
@@ -42,6 +41,16 @@ body {
     padding: 22px;
 
     box-shadow: 0 0 18px rgba(0,0,0,0.5);
+    text-align: center;
+}
+
+/* ================= LOGO ================= */
+.logo {
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+    margin-bottom: 10px;
+    filter: drop-shadow(0 0 10px rgba(0,230,118,0.25));
 }
 
 /* ================= HEADER ================= */
@@ -51,6 +60,7 @@ h2 {
 
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
 }
 
@@ -93,6 +103,7 @@ input:focus {
     color: #777;
     margin-top: 4px;
     margin-bottom: 8px;
+    text-align: left;
 }
 
 /* ================= BUTTON ================= */
@@ -138,6 +149,11 @@ button:active {
         border-radius: 14px;
     }
 
+    .logo {
+        width: 60px;
+        height: 60px;
+    }
+
     h2 {
         font-size: 18px;
     }
@@ -153,6 +169,9 @@ button:active {
 <body>
 
 <div class="box">
+
+    <!-- ✅ LOGO -->
+    <img src="{{ url_for('static', filename='logo.png') }}" class="logo">
 
     <h2>
         <i class="fa-solid fa-user-plus icon"></i>
@@ -172,7 +191,7 @@ button:active {
         <div class="hint">Unique handle (cannot be changed easily)</div>
 
         <input type="email" name="email" placeholder="Email" required>
-        <div class="hint">Used for account recovery (optional backend use)</div>
+        <div class="hint">Used for account recovery</div>
 
         <input type="password" name="password" placeholder="Password" required>
         <div class="hint">Use a strong password</div>

@@ -384,6 +384,7 @@ def request_api():
 # ======================================================
 @app.route("/admin", methods=["GET", "POST"])
 def admin():
+    # LOGIN HANDLING
     if request.method == "POST":
         if (
             request.form["username"] == ADMIN_USERNAME and
@@ -398,12 +399,48 @@ def admin():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
+    # -------------------------
+    # MEDIA
+    # -------------------------
     cursor.execute("SELECT id, title, media_type, filename FROM media")
     media = cursor.fetchall()
 
+    # -------------------------
+    # USERS
+    # -------------------------
+    cursor.execute("""
+        SELECT id, full_name, username, email, created_at
+        FROM users
+        ORDER BY created_at DESC
+    """)
+    users = cursor.fetchall()
+
+    # -------------------------
+    # KPI METRICS
+    # -------------------------
+    cursor.execute("SELECT COUNT(*) FROM users")
+    total_users = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM media")
+    total_media = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM likes")
+    total_likes = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM comments")
+    total_comments = cursor.fetchone()[0]
+
     conn.close()
 
-    return render_template("admin.html", media=media)
+    return render_template(
+        "admin.html",
+        media=media,
+        users=users,
+        total_users=total_users,
+        total_media=total_media,
+        total_likes=total_likes,
+        total_comments=total_comments
+    )
 
 # ======================================================
 # UPLOAD
@@ -441,4 +478,4 @@ def upload():
 # RUN
 # ======================================================
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)

@@ -5,7 +5,6 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
@@ -39,6 +38,17 @@
 
             padding: 22px;
             box-shadow: 0 0 15px rgba(0,0,0,0.5);
+
+            text-align: center;
+        }
+
+        /* ================= LOGO ================= */
+        .logo {
+            width: 65px;
+            height: 65px;
+            object-fit: contain;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 0 10px rgba(3,169,244,0.25));
         }
 
         /* ================= TITLE ================= */
@@ -47,6 +57,7 @@
             font-size: 20px;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
         }
 
@@ -121,13 +132,17 @@
             text-decoration: underline;
         }
 
-        /* ================= RESPONSIVE ADJUSTMENTS ================= */
-
+        /* ================= RESPONSIVE ================= */
         @media (max-width: 400px) {
 
             .box {
                 padding: 18px;
                 border-radius: 12px;
+            }
+
+            .logo {
+                width: 55px;
+                height: 55px;
             }
 
             h2 {
@@ -151,6 +166,9 @@
 <body>
 
 <div class="box">
+
+    <!-- ✅ LOGO -->
+    <img src="{{ url_for('static', filename='logo.png') }}" class="logo">
 
     <h2>
         <i class="fa-solid fa-right-to-bracket" style="color:#03a9f4;"></i>
