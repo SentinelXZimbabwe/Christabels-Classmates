@@ -161,8 +161,10 @@ body {
     margin-bottom: 10px;
 }
 
-/* MEDIA */
-video, audio, img {
+/* ================= MEDIA ================= */
+video,
+audio,
+img {
     width: 100%;
     border-radius: 12px;
     margin-top: 8px;
@@ -209,15 +211,60 @@ video, audio, img {
     font-weight: 500;
 }
 
+/* COMMENT TOP */
+.comment-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+/* COMMENT FORM */
+.comment-form {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+/* COMMENT INPUT */
 .comment-box {
-    width: 100%;
+    flex: 1;
     padding: 10px;
-    margin-top: 8px;
     border-radius: 10px;
     border: 1px solid var(--border);
     background: #0f0f0f;
     color: white;
     outline: none;
+}
+
+/* COMMENT BUTTON */
+.comment-btn {
+    border: none;
+    border-radius: 10px;
+    padding: 0 14px;
+    cursor: pointer;
+
+    background: linear-gradient(
+        135deg,
+        var(--accent),
+        var(--accent2)
+    );
+
+    color: black;
+    font-weight: bold;
+}
+
+/* DELETE BUTTON */
+.delete-comment {
+    color: #ff5252;
+    text-decoration: none;
+    font-size: 13px;
+    opacity: 0.85;
+    transition: 0.2s;
+}
+
+.delete-comment:hover {
+    opacity: 1;
 }
 
 /* NO RESULTS */
@@ -252,6 +299,10 @@ video, audio, img {
     .user {
         text-align: right;
     }
+
+    .comment-form {
+        flex-direction: row;
+    }
 }
 
 </style>
@@ -263,77 +314,142 @@ video, audio, img {
 <div class="header">
 
     <div class="brand">
-        <img src="{{ url_for('static', filename='logo.png') }}" class="logo">
+
+        <img src="{{ url_for('static', filename='logo.png') }}"
+             class="logo">
+
         Christabel Classmates
+
     </div>
 
-    <form class="search" method="GET" action="/app">
-        <input type="text" name="search"
+    <!-- SEARCH -->
+    <form class="search"
+          method="GET"
+          action="/app">
+
+        <input type="text"
+               name="search"
                placeholder="Search music..."
                value="{{ search if search else '' }}">
-        <button><i class="fa fa-search"></i></button>
+
+        <button>
+            <i class="fa fa-search"></i>
+        </button>
+
     </form>
 
+    <!-- USER -->
     <div class="user">
+
         {% if logged_in %}
+
             {{ session.username }}
-            <a href="/logout">Logout</a>
+
+            <a href="/logout">
+                Logout
+            </a>
+
         {% else %}
-            <a href="/login">Login</a>
+
+            <a href="/login">
+                Login
+            </a>
+
         {% endif %}
+
     </div>
 
 </div>
 
 <!-- ================= NAV ================= -->
 <div class="container">
+
     <div class="nav">
-        <a href="/app">All</a>
-        <a href="/app?type=video">🎬 Videos</a>
-        <a href="/app?type=audio">🎵 Audio</a>
-        <a href="/app?type=image">🖼️ Images</a>
+
+        <a href="/app">
+            All
+        </a>
+
+        <a href="/app?type=video">
+            🎬 Videos
+        </a>
+
+        <a href="/app?type=audio">
+            🎵 Audio
+        </a>
+
+        <a href="/app?type=image">
+            🖼️ Images
+        </a>
+
     </div>
+
 </div>
 
 <!-- ================= FEED ================= -->
 <div class="container">
 
 {% if no_results %}
+
     <div class="no-results">
         No results found.
     </div>
+
 {% endif %}
 
 {% for item in media %}
+
 <div class="card">
 
-    <div class="title">{{ item.title }}</div>
-    <div class="meta">{{ item.type }}</div>
+    <!-- TITLE -->
+    <div class="title">
+        {{ item.title }}
+    </div>
 
+    <!-- TYPE -->
+    <div class="meta">
+        {{ item.type }}
+    </div>
+
+    <!-- VIDEO -->
     {% if item.type == "video" %}
+
         <video controls>
             <source src="/media/{{ item.id }}">
         </video>
 
+    <!-- AUDIO -->
     {% elif item.type == "audio" %}
+
         <audio controls>
             <source src="/media/{{ item.id }}">
         </audio>
 
+    <!-- IMAGE -->
     {% elif item.type == "image" %}
+
         <img src="/media/{{ item.id }}">
+
     {% endif %}
 
+    <!-- ACTIONS -->
     <div class="actions">
-        <div>❤️ {{ likes.get(item.id, 0) }}</div>
+
+        <div>
+            ❤️ {{ likes.get(item.id, 0) }}
+        </div>
 
         <a href="/like/{{ item.id }}">
+
             <button class="like">
                 <i class="fa-solid fa-heart"></i>
             </button>
+
         </a>
+
     </div>
 
+    <!-- COMMENTS -->
     <div class="comments">
 
         <div class="comment-count">
@@ -343,29 +459,70 @@ video, audio, img {
         {% set post_comments = comments.get(item.id, []) %}
 
         {% if post_comments %}
+
             {% for c in post_comments %}
+
                 <div class="comment">
-                    <span>{{ c.user }}</span>: {{ c.comment }}
+
+                    <div class="comment-top">
+
+                        <div>
+                            <span>{{ c.user }}</span>:
+                            {{ c.comment }}
+                        </div>
+
+                        {% if c.user_id == session.user_id or session.get('admin') %}
+
+                        <a href="/delete-comment/{{ c.id }}"
+                           class="delete-comment">
+
+                            <i class="fa-solid fa-trash"></i>
+
+                        </a>
+
+                        {% endif %}
+
+                    </div>
+
                 </div>
+
             {% endfor %}
+
         {% else %}
+
             <div class="comment" style="color:#777;">
                 No comments yet
             </div>
+
         {% endif %}
 
+        <!-- COMMENT FORM -->
         {% if logged_in %}
-        <form method="POST" action="/comment/{{ item.id }}">
+
+        <form method="POST"
+              action="/comment/{{ item.id }}"
+              class="comment-form">
+
             <input class="comment-box"
                    name="comment"
                    placeholder="Write a comment..."
                    required>
+
+            <button type="submit"
+                    class="comment-btn">
+
+                <i class="fa-solid fa-paper-plane"></i>
+
+            </button>
+
         </form>
+
         {% endif %}
 
     </div>
 
 </div>
+
 {% endfor %}
 
 </div>

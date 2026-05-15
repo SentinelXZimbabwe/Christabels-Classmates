@@ -77,7 +77,6 @@ body {
     padding: 20px;
 }
 
-/* HEADER */
 .header {
     display: flex;
     justify-content: space-between;
@@ -115,6 +114,7 @@ input {
     background: rgba(0,0,0,0.3);
     color: white;
     font-size: 15px;
+    box-sizing: border-box;
 }
 
 /* ================= BUTTON ================= */
@@ -129,6 +129,16 @@ button {
     cursor: pointer;
 }
 
+.delete-btn {
+    background: #ff3d3d;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 12px;
+    display: inline-block;
+}
+
 /* ================= TABLE ================= */
 .table-wrapper {
     overflow-x: auto;
@@ -136,7 +146,7 @@ button {
 
 table {
     width: 100%;
-    min-width: 500px;
+    min-width: 700px;
     border-collapse: collapse;
 }
 
@@ -222,23 +232,6 @@ th {
         padding: 14px;
     }
 
-    .header h2 {
-        font-size: 18px;
-    }
-
-}
-
-/* SMALL MOBILE */
-@media (max-width: 480px) {
-
-    .kpi-card p {
-        font-size: 16px;
-    }
-
-    th, td {
-        font-size: 12px;
-    }
-
 }
 
 </style>
@@ -258,17 +251,27 @@ th {
         <h3>Admin</h3>
 
         <div class="nav">
-            <a href="#" class="active" onclick="showSection(event,'kpi')">
+
+            <a href="#" class="active"
+               onclick="showSection(event,'kpi')">
                 <i class="fa-solid fa-chart-line"></i> KPI
             </a>
 
-            <a href="#" onclick="showSection(event,'media')">
+            <a href="#"
+               onclick="showSection(event,'media')">
                 <i class="fa-solid fa-music"></i> Media
             </a>
 
-            <a href="#" onclick="showSection(event,'users')">
+            <a href="#"
+               onclick="showSection(event,'users')">
                 <i class="fa-solid fa-users"></i> Users
             </a>
+
+            <a href="#"
+               onclick="showSection(event,'comments')">
+                <i class="fa-solid fa-comments"></i> Comments
+            </a>
+
         </div>
 
     </div>
@@ -283,57 +286,105 @@ th {
 
         <!-- KPI -->
         <div id="kpi" class="section active">
+
             <div class="box">
+
                 <div class="kpi">
+
                     <div class="kpi-card">
                         <h4>Users</h4>
                         <p>{{ total_users }}</p>
                     </div>
+
                     <div class="kpi-card">
                         <h4>Media</h4>
                         <p>{{ total_media }}</p>
                     </div>
+
                     <div class="kpi-card">
                         <h4>Likes</h4>
                         <p>{{ total_likes }}</p>
                     </div>
+
                     <div class="kpi-card">
                         <h4>Comments</h4>
                         <p>{{ total_comments }}</p>
                     </div>
+
                 </div>
+
             </div>
+
         </div>
 
         <!-- MEDIA -->
         <div id="media" class="section">
 
             <div class="box">
-                <form action="/upload" method="POST" enctype="multipart/form-data">
-                    <input type="text" name="title" placeholder="Media Title" required>
-                    <input type="file" name="file" required>
-                    <button type="submit">Upload</button>
+
+                <form action="/upload"
+                      method="POST"
+                      enctype="multipart/form-data">
+
+                    <input type="text"
+                           name="title"
+                           placeholder="Media Title"
+                           required>
+
+                    <input type="file"
+                           name="file"
+                           required>
+
+                    <button type="submit">
+                        Upload
+                    </button>
+
                 </form>
+
             </div>
 
             <div class="box">
+
                 <div class="table-wrapper">
+
                     <table>
+
                         <tr>
                             <th>Title</th>
                             <th>Type</th>
                             <th>Play</th>
+                            <th>Delete</th>
                         </tr>
 
                         {% for item in media %}
                         <tr>
+
                             <td>{{ item[1] }}</td>
+
                             <td>{{ item[2] }}</td>
-                            <td><a href="/media/{{ item[0] }}" target="_blank">Play</a></td>
+
+                            <td>
+                                <a href="/media/{{ item[0] }}"
+                                   target="_blank">
+                                    Open
+                                </a>
+                            </td>
+
+                            <td>
+                                <a href="/delete-media/{{ item[0] }}"
+                                   class="delete-btn"
+                                   onclick="return confirm('Delete this media?')">
+                                   Delete
+                                </a>
+                            </td>
+
                         </tr>
                         {% endfor %}
+
                     </table>
+
                 </div>
+
             </div>
 
         </div>
@@ -342,8 +393,11 @@ th {
         <div id="users" class="section">
 
             <div class="box">
+
                 <div class="table-wrapper">
+
                     <table>
+
                         <tr>
                             <th>Name</th>
                             <th>Username</th>
@@ -353,14 +407,63 @@ th {
 
                         {% for user in users %}
                         <tr>
+
                             <td>{{ user[1] }}</td>
                             <td>{{ user[2] }}</td>
                             <td>{{ user[3] }}</td>
                             <td>{{ user[4] }}</td>
+
                         </tr>
                         {% endfor %}
+
                     </table>
+
                 </div>
+
+            </div>
+
+        </div>
+
+        <!-- COMMENTS -->
+        <div id="comments" class="section">
+
+            <div class="box">
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <tr>
+                            <th>User</th>
+                            <th>Comment</th>
+                            <th>Date</th>
+                            <th>Delete</th>
+                        </tr>
+
+                        {% for c in all_comments %}
+                        <tr>
+
+                            <td>{{ c.user }}</td>
+
+                            <td>{{ c.comment }}</td>
+
+                            <td>{{ c.time }}</td>
+
+                            <td>
+                                <a href="/delete-comment/{{ c.id }}"
+                                   class="delete-btn"
+                                   onclick="return confirm('Delete this comment?')">
+                                   Delete
+                                </a>
+                            </td>
+
+                        </tr>
+                        {% endfor %}
+
+                    </table>
+
+                </div>
+
             </div>
 
         </div>
@@ -370,15 +473,23 @@ th {
 </div>
 
 <script>
+
 function showSection(e, id) {
+
     e.preventDefault();
 
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.section')
+        .forEach(s => s.classList.remove('active'));
 
-    document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
+    document.getElementById(id)
+        .classList.add('active');
+
+    document.querySelectorAll('.nav a')
+        .forEach(a => a.classList.remove('active'));
+
     e.currentTarget.classList.add('active');
 }
+
 </script>
 
 {% else %}
@@ -387,12 +498,22 @@ function showSection(e, id) {
 
     <h2>Admin Login</h2>
 
-    <form method="POST" style="max-width:300px;margin:auto">
+    <form method="POST"
+          style="max-width:300px;margin:auto">
 
-        <input type="text" name="username" placeholder="Username" required>
-        <input type="password" name="password" placeholder="Password" required>
+        <input type="text"
+               name="username"
+               placeholder="Username"
+               required>
 
-        <button type="submit">Login</button>
+        <input type="password"
+               name="password"
+               placeholder="Password"
+               required>
+
+        <button type="submit">
+            Login
+        </button>
 
     </form>
 

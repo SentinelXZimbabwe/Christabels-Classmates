@@ -20,6 +20,7 @@ os.makedirs(DB_FOLDER, exist_ok=True)
 # INIT DB
 # -------------------------
 def init_db():
+
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
@@ -83,27 +84,37 @@ ADMIN_PASSWORD = "christabel12234@"
 # MEDIA TYPE DETECTION
 # ======================================================
 def get_media_category(filename):
+
     ext = filename.lower().split(".")[-1]
 
     if ext in ["mp4", "mov", "avi", "mkv", "webm"]:
         return "video"
+
     elif ext in ["mp3", "wav", "aac", "ogg"]:
         return "audio"
+
     elif ext in ["jpg", "jpeg", "png", "webp"]:
         return "image"
+
     return "unknown"
 
 # ======================================================
 # USERNAME RESOLVER
 # ======================================================
 def get_username(user_id):
+
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    cursor.execute("SELECT username FROM users WHERE id=?", (user_id,))
+    cursor.execute(
+        "SELECT username FROM users WHERE id=?",
+        (user_id,)
+    )
+
     row = cursor.fetchone()
 
     conn.close()
+
     return row[0] if row else "Unknown User"
 
 # ======================================================
@@ -118,6 +129,7 @@ def landing():
 # ======================================================
 @app.route("/app")
 def app_feed():
+
     if not session.get("user_id"):
         return redirect("/login")
 
@@ -135,10 +147,13 @@ def app_feed():
         params.append(media_type)
 
     cursor.execute(query, params)
+
     rows = cursor.fetchall()
 
     media = []
+
     for r in rows:
+
         if search and search not in r[1].lower():
             continue
 
@@ -149,38 +164,64 @@ def app_feed():
             "filename": r[3]
         })
 
-    cursor.execute("SELECT media_id, COUNT(*) FROM likes GROUP BY media_id")
+    # -------------------------
+    # LIKES
+    # -------------------------
+    cursor.execute("""
+        SELECT media_id, COUNT(*)
+        FROM likes
+        GROUP BY media_id
+    """)
+
     likes = dict(cursor.fetchall())
 
-    cursor.execute("SELECT media_id, COUNT(*) FROM comments GROUP BY media_id")
-    comment_counts = dict(cursor.fetchall())
-
+    # -------------------------
+    # COMMENTS
+    # -------------------------
     cursor.execute("""
-        SELECT media_id, comment, created_at, user_id
-        FROM comments ORDER BY created_at DESC
+        SELECT
+            id,
+            media_id,
+            comment,
+            created_at,
+            user_id
+        FROM comments
+        ORDER BY created_at DESC
     """)
+
     raw_comments = cursor.fetchall()
 
     conn.close()
 
     comments = {}
-    for m_id, comment, created_at, user_id in raw_comments:
+
+    for comment_id, m_id, comment, created_at, user_id in raw_comments:
+
         comments.setdefault(m_id, []).append({
+
+            "id": comment_id,
             "comment": comment,
             "time": created_at,
-            "user": get_username(user_id)
+            "user": get_username(user_id),
+            "user_id": user_id
+
         })
 
     return render_template(
+
         "app.html",
+
         media=media,
         likes=likes,
         comments=comments,
-        comment_counts=comment_counts,
+
         logged_in=True,
+
         search=search,
         active_type=media_type,
+
         no_results=len(media) == 0
+
     )
 
 # ======================================================
@@ -188,15 +229,26 @@ def app_feed():
 # ======================================================
 @app.route("/media/<int:media_id>")
 def media(media_id):
+
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    cursor.execute("SELECT filename, file_blob FROM media WHERE id=?", (media_id,))
+    cursor.execute(
+        "SELECT filename, file_blob FROM media WHERE id=?",
+        (media_id,)
+    )
+
     row = cursor.fetchone()
+
     conn.close()
 
     if row:
-        return send_file(BytesIO(row[1]), download_name=row[0], as_attachment=False)
+
+        return send_file(
+            BytesIO(row[1]),
+            download_name=row[0],
+            as_attachment=False
+        )
 
     return "Not found", 404
 
@@ -205,6 +257,7 @@ def media(media_id):
 # ======================================================
 @app.route("/like/<int:media_id>")
 def like(media_id):
+
     if not session.get("user_id"):
         return "Login required", 403
 
@@ -212,15 +265,19 @@ def like(media_id):
     cursor = conn.cursor()
 
     try:
+
         cursor.execute(
             "INSERT INTO likes (user_id, media_id) VALUES (?, ?)",
             (session["user_id"], media_id)
         )
+
         conn.commit()
+
     except:
         pass
 
     conn.close()
+
     return redirect("/app")
 
 # ======================================================
@@ -228,20 +285,33 @@ def like(media_id):
 # ======================================================
 @app.route("/comment/<int:media_id>", methods=["POST"])
 def comment(media_id):
+
     if not session.get("user_id"):
         return "Login required", 403
+
+    comment_text = request.form["comment"].strip()
+
+    if not comment_text:
+        return redirect("/app")
 
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     cursor.execute("""
-        INSERT INTO comments (user_id, media_id, comment, created_at)
+        INSERT INTO comments (
+            user_id,
+            media_id,
+            comment,
+            created_at
+        )
         VALUES (?, ?, ?, ?)
     """, (
+
         session["user_id"],
         media_id,
-        request.form["comment"],
+        comment_text,
         datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
     ))
 
     conn.commit()
@@ -250,29 +320,124 @@ def comment(media_id):
     return redirect("/app")
 
 # ======================================================
+# DELETE COMMENT
+# ======================================================
+@app.route("/delete-comment/<int:comment_id>")
+def delete_comment(comment_id):
+
+    if not session.get("user_id"):
+        return redirect("/login")
+
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT user_id
+        FROM comments
+        WHERE id=?
+    """, (comment_id,))
+
+    row = cursor.fetchone()
+
+    if not row:
+
+        conn.close()
+        return redirect("/app")
+
+    comment_owner = row[0]
+
+    # USER CAN DELETE OWN COMMENT
+    # ADMIN CAN DELETE ANY COMMENT
+    if (
+        comment_owner == session["user_id"] or
+        session.get("admin")
+    ):
+
+        cursor.execute("""
+            DELETE FROM comments
+            WHERE id=?
+        """, (comment_id,))
+
+        conn.commit()
+
+    conn.close()
+
+    return redirect("/app")
+
+# ======================================================
+# DELETE MEDIA (ADMIN)
+# ======================================================
+@app.route("/delete-media/<int:media_id>")
+def delete_media(media_id):
+
+    if not session.get("admin"):
+        return redirect("/admin")
+
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    # DELETE LIKES
+    cursor.execute("""
+        DELETE FROM likes
+        WHERE media_id=?
+    """, (media_id,))
+
+    # DELETE COMMENTS
+    cursor.execute("""
+        DELETE FROM comments
+        WHERE media_id=?
+    """, (media_id,))
+
+    # DELETE MEDIA
+    cursor.execute("""
+        DELETE FROM media
+        WHERE id=?
+    """, (media_id,))
+
+    conn.commit()
+    conn.close()
+
+    return redirect("/admin")
+
+# ======================================================
 # CREATE ACCOUNT
 # ======================================================
 @app.route("/create-account", methods=["GET", "POST"])
 def create_account():
+
     if request.method == "POST":
+
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
 
         try:
+
             cursor.execute("""
-                INSERT INTO users (id, full_name, username, email, password, created_at)
+                INSERT INTO users (
+                    id,
+                    full_name,
+                    username,
+                    email,
+                    password,
+                    created_at
+                )
                 VALUES (?, ?, ?, ?, ?, ?)
             """, (
+
                 str(uuid.uuid4()),
                 request.form["full_name"],
                 request.form["username"],
                 request.form["email"],
                 request.form["password"],
                 datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
             ))
+
             conn.commit()
+
         except:
             return "User already exists", 400
+
         finally:
             conn.close()
 
@@ -285,21 +450,32 @@ def create_account():
 # ======================================================
 @app.route("/login", methods=["GET", "POST"])
 def login():
+
     if request.method == "POST":
+
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
 
         cursor.execute("""
-            SELECT id, username FROM users
+            SELECT id, username
+            FROM users
             WHERE username=? AND password=?
-        """, (request.form["username"], request.form["password"]))
+        """, (
+
+            request.form["username"],
+            request.form["password"]
+
+        ))
 
         user = cursor.fetchone()
+
         conn.close()
 
         if user:
+
             session["user_id"] = user[0]
             session["username"] = user[1]
+
             return redirect("/app")
 
         return "Invalid credentials", 401
@@ -311,7 +487,9 @@ def login():
 # ======================================================
 @app.route("/logout")
 def logout():
+
     session.clear()
+
     return redirect("/")
 
 # ======================================================
@@ -319,14 +497,21 @@ def logout():
 # ======================================================
 @app.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
+
     if request.method == "POST":
+
         email = request.form["email"]
 
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
 
-        cursor.execute("SELECT id FROM users WHERE email=?", (email,))
+        cursor.execute(
+            "SELECT id FROM users WHERE email=?",
+            (email,)
+        )
+
         user = cursor.fetchone()
+
         conn.close()
 
         if not user:
@@ -334,8 +519,13 @@ def forgot_password():
 
         token = functions.create_reset_token(user[0])
 
-        base_url = request.host_url.rstrip("/")  # 🔥 FIXED
-        functions.send_reset_email(email, token, base_url)
+        base_url = request.host_url.rstrip("/")
+
+        functions.send_reset_email(
+            email,
+            token,
+            base_url
+        )
 
         return "Reset link sent to email"
 
@@ -346,24 +536,36 @@ def forgot_password():
 # ======================================================
 @app.route("/reset-password/<token>", methods=["GET", "POST"])
 def reset_password(token):
+
     user_id = functions.verify_token(token)
 
     if not user_id:
         return "Invalid or expired token", 400
 
     if request.method == "POST":
+
         new_password = request.form["password"]
-        functions.update_password(user_id, new_password)
+
+        functions.update_password(
+            user_id,
+            new_password
+        )
+
         return redirect("/login")
 
-    return render_template("reset-password.html", token=token)
+    return render_template(
+        "reset-password.html",
+        token=token
+    )
 
 # ======================================================
 # API REQUEST PAGE
 # ======================================================
 @app.route("/request-api", methods=["GET", "POST"])
 def request_api():
+
     if request.method == "POST":
+
         name = request.form["name"]
         email = request.form["email"]
         tier = request.form["tier"]
@@ -372,10 +574,16 @@ def request_api():
         base_url = request.host_url.rstrip("/")
 
         functions.send_api_request_email(
-            name, email, tier, use_case, base_url
+            name,
+            email,
+            tier,
+            use_case,
+            base_url
         )
 
-        return render_template("api-request-success.html")
+        return render_template(
+            "api-request-success.html"
+        )
 
     return render_template("request-api.html")
 
@@ -384,13 +592,17 @@ def request_api():
 # ======================================================
 @app.route("/admin", methods=["GET", "POST"])
 def admin():
+
     # LOGIN HANDLING
     if request.method == "POST":
+
         if (
             request.form["username"] == ADMIN_USERNAME and
             request.form["password"] == ADMIN_PASSWORD
         ):
+
             session["admin"] = True
+
             return redirect("/admin")
 
     if not session.get("admin"):
@@ -402,17 +614,27 @@ def admin():
     # -------------------------
     # MEDIA
     # -------------------------
-    cursor.execute("SELECT id, title, media_type, filename FROM media")
+    cursor.execute("""
+        SELECT id, title, media_type, filename
+        FROM media
+    """)
+
     media = cursor.fetchall()
 
     # -------------------------
     # USERS
     # -------------------------
     cursor.execute("""
-        SELECT id, full_name, username, email, created_at
+        SELECT
+            id,
+            full_name,
+            username,
+            email,
+            created_at
         FROM users
         ORDER BY created_at DESC
     """)
+
     users = cursor.fetchall()
 
     # -------------------------
@@ -433,13 +655,17 @@ def admin():
     conn.close()
 
     return render_template(
+
         "admin.html",
+
         media=media,
         users=users,
+
         total_users=total_users,
         total_media=total_media,
         total_likes=total_likes,
         total_comments=total_comments
+
     )
 
 # ======================================================
@@ -447,10 +673,12 @@ def admin():
 # ======================================================
 @app.route("/upload", methods=["POST"])
 def upload():
+
     if not session.get("admin"):
         return redirect("/admin")
 
     file = request.files["file"]
+
     filename = file.filename
     blob = file.read()
 
@@ -460,13 +688,20 @@ def upload():
     cursor = conn.cursor()
 
     cursor.execute("""
-        INSERT INTO media (title, media_type, filename, file_blob)
+        INSERT INTO media (
+            title,
+            media_type,
+            filename,
+            file_blob
+        )
         VALUES (?, ?, ?, ?)
     """, (
+
         request.form["title"],
         media_type,
         filename,
         blob
+
     ))
 
     conn.commit()
@@ -478,4 +713,9 @@ def upload():
 # RUN
 # ======================================================
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+
+    app.run(
+        host="0.0.0.0",
+        port=5000,
+        debug=True
+    )

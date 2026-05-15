@@ -5,7 +5,8 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
 
@@ -87,6 +88,30 @@
         input:focus {
             border-color: #2196f3;
             box-shadow: 0 0 6px rgba(33, 150, 243, 0.3);
+        }
+
+        /* ================= PASSWORD WRAPPER ================= */
+        .password-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .password-wrapper input {
+            padding-right: 45px;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #888;
+            font-size: 15px;
+        }
+
+        .toggle-password:hover {
+            color: #03a9f4;
         }
 
         /* ================= BUTTON ================= */
@@ -181,8 +206,24 @@
 
     <form method="POST">
 
-        <input type="text" name="username" placeholder="Username" required>
-        <input type="password" name="password" placeholder="Password" required>
+        <input type="text"
+               name="username"
+               placeholder="Username"
+               required>
+
+        <!-- PASSWORD FIELD -->
+        <div class="password-wrapper">
+
+            <input type="password"
+                   name="password"
+                   id="password"
+                   placeholder="Password"
+                   required>
+
+            <i class="fa-solid fa-eye toggle-password"
+               id="togglePassword"></i>
+
+        </div>
 
         <button type="submit">
             <i class="fa-solid fa-unlock"></i> Login
@@ -192,6 +233,7 @@
 
     <!-- LINKS -->
     <div class="links">
+
         <a href="/forgot-password">
             <i class="fa-solid fa-key"></i> Forgot Password
         </a>
@@ -199,9 +241,35 @@
         <a href="/create-account">
             Create Account
         </a>
+
     </div>
 
 </div>
+
+<!-- ================= PASSWORD TOGGLE SCRIPT ================= -->
+<script>
+
+    const togglePassword =
+        document.getElementById("togglePassword");
+
+    const password =
+        document.getElementById("password");
+
+    togglePassword.addEventListener("click", function () {
+
+        const type =
+            password.getAttribute("type") === "password"
+            ? "text"
+            : "password";
+
+        password.setAttribute("type", type);
+
+        this.classList.toggle("fa-eye");
+        this.classList.toggle("fa-eye-slash");
+
+    });
+
+</script>
 
 </body>
 </html>
